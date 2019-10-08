@@ -2,22 +2,36 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Picnic Party</title>
+	<title>Picking Leaves</title>
 </head>
 <body>
-<!--
-<div id="disqus_thread"></div>
-<script>
-	(function() {
-		var d = document, s = d.createElement('script');
-		s.src = 'http://nau-cs413.disqus.com/embed.js';
-		s.setAttribute('data-timestamp', +new Date());
-		(d.head || d.body).appendChild(s);
-	})();
-</script>
--->
-<a href="https://github.com/chloebates4/CS413_Minimalism">Github Repo</a>
-<p>How to play: use the W, A, S, D keys to mve the ant and collect the fruit!</p>
+<div class="wrapper">
+
+	<!--The Game Port-->
+	<div id="menu" class="main">
+		<a href="https://github.com/chloebates4/CS413_Puzzles.git">Github Repo</a>
+		<div id="main"></div>
+	</div>
+
+	<!--Error Handling-->
+	<canvas id="canvas" width="800" height="480">
+		<p>Your browser doesn't support this. </p>
+	</canvas>
+
+	<!--Disqus-->
+	<div id="disqus_thread"></div>
+	<script>
+		(function() {
+			var d = document, s = d.createElement('script');
+			s.src = 'http://nau-cs413.disqus.com/embed.js';
+			s.setAttribute('data-timestamp', +new Date());
+			(d.head || d.body).appendChild(s);
+		})();
+	</script>
+
+</div>
+
+<!--Scripts-->
 <script type="text/javascript" src="js/pixi.js"></script>
 <script type="text/javascript" src="js/bump.js"></script>
 <script type="text/javascript" src="js/game.js"></script>
