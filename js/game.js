@@ -1,77 +1,121 @@
+// load main menu
+var gameport = document.getElementById("menu");
+
+//bootstrapping pixi.js
 var renderer = PIXI.autoDetectRenderer({transparent: true});
-document.body.appendChild(renderer.view);
+gameport.appendChild(renderer.view);
 
+//root of scene graph
 var stage = new PIXI.Container();
-var bump = new Bump(PIXI);
+//PIXI.SCALE_MODES.DEFAULT = PIXI.SCALE_MODES.NEAREST;
+var texture = PIXI.Texture.from("assets/leaves_background.png");
 
-var blanket = new PIXI.Sprite(PIXI.Texture.from("assets/blanket_800_600.png"));
-stage.addChild(blanket);
+var menu_background = new PIXI.Sprite(texture);
+loadMenu();
+function loadMenu() {
+    menu_background.width = renderer.screen.width;
+    menu_background.height = renderer.screen.height;
+    stage.addChild(menu_background);
 
-var ant = new PIXI.Sprite(PIXI.Texture.from("assets/ant.png"));
-ant.width = 50;
-ant.height = 50;
-ant.position.x = 750;
-ant.position.y = 550;
-stage.addChild(ant);
+    // add play button
+    var playBtn = new PIXI.Sprite(PIXI.Texture.from("assets/play_button_fall.png"));
+    playBtn.position.x = 100;
+    playBtn.position.y = 400;
+    playBtn.buttonMode = true;
+    playBtn.interactive = true;
+    playBtn.buttonMode = true;
+    playBtn
+        .on('pointerdown', onPlayButtonDown);
 
-var food = [
-    "assets/cherries.png", "assets/cherries.png", "assets/cherries.png",
-    "assets/watermelon.png", "assets/watermelon.png", "assets/watermelon.png"
-];
-var foodSprites = [];
+    stage.addChild(playBtn);
 
-scatterFood();
-function scatterFood() {
-    for (i = 0; i < food.length; i++) {
+    // add credits button
+    var credsBtn = new PIXI.Sprite(PIXI.Texture.from("assets/credits_button_fall.png"));
+    credsBtn.position.x = 500;
+    credsBtn.position.y = 410;
+    credsBtn.buttonMode = true;
+    credsBtn.interactive = true;
+    credsBtn.buttonMode = true;
+    credsBtn
+        .on('pointerdown', onCredButtonDown);
 
-        // assign sprite to a png from the food array
-        var foodItem = new PIXI.Sprite(PIXI.Texture.from(food[i]));
-
-        // "scatter" food by randomly generating x,y coordinates
-        var xValue = Math.floor(Math.random() * 750) + 1;
-        var yValue = Math.floor(Math.random() * 550) + 1;
-
-        foodItem.width = 70;
-        foodItem.height = 70;
-        foodItem.position.x = xValue;
-        foodItem.position.y = yValue;
-        stage.addChild(foodItem);
-        foodSprites[i] = foodItem;
-    }
+    stage.addChild(credsBtn);
 }
 
-function keydownEventHandler(e) {
 
-    if (e.keyCode == 87) { //w key
-        ant.position.y -=10;
-    }
+function onPlayButtonDown() {
+    // load game background
+    var game_board = new PIXI.Sprite(PIXI.Texture.from("assets/background_lawn.png"));
+    game_board.width = renderer.screen.width;
+    game_board.height = renderer.screen.height;
+    stage.addChild(game_board);
 
-    if (e.keyCode == 83) { //s key
-        ant.position.y +=10;
-    }
+    var hand = new PIXI.Sprite(PIXI.Texture.from("assets/hand.png"));
 
-    if (e.keyCode == 65) { //a key
-        ant.position.x -=10;
-    }
+    hand.position.x = 740;
+    hand.position.y = 540;
+    stage.addChild(hand);
 
-    if (e.keyCode == 68) { //d key
-        ant.position.x +=10;
-    }
+
+    // add menu button
+    var menuBtn = new PIXI.Sprite(PIXI.Texture.from("assets/button_menu_fall.png"));
+    menuBtn.position.x = 20;
+    menuBtn.position.y = 520;
+    menuBtn.buttonMode = true;
+    menuBtn.interactive = true;
+    menuBtn.buttonMode = true;
+    menuBtn
+        .on('pointerdown', loadMenu);
+
+    stage.addChild(menuBtn);
 }
 
-ant.interactive = true;
+function onCredButtonDown() {
+    var credits_board = new PIXI.Sprite(PIXI.Texture.from("assets/credits_background_lawn.png"));
+    credits_board.width = renderer.screen.width;
+    credits_board.height = renderer.screen.height;
+    stage.addChild(credits_board);
+    let people_text = new PIXI.Text(
+        'Chloe Bates',
+        {fontFamily : "\"Courier New\", Courier, monospace",
+            fontSize: 25,
+            fontWeight: "bold",
+            fill : ["#fa0"],
+            align : 'center'});
 
-document.addEventListener("keydown", keydownEventHandler);
+    people_text.x = 300;
+    people_text.y = 285;
+    stage.addChild(people_text);
+
+    let creds_title_text = new PIXI.Text(
+        'CREDITS',
+        {fontFamily : "\"Courier New\", Courier, monospace",
+            fontSize: 75,
+            fontWeight: "bold",
+            fill : ["#fa0"],
+            align : 'center'});
+
+    creds_title_text.x = 225;
+    creds_title_text.y = 35;
+    stage.addChild(creds_title_text);
+
+    // add menu title
+    var menuBtn = new PIXI.Sprite(PIXI.Texture.from("assets/button_menu_fall.png"));
+    menuBtn.position.x = 20;
+    menuBtn.position.y = 520;
+    menuBtn.buttonMode = true;
+    menuBtn.interactive = true;
+    menuBtn.buttonMode = true;
+    menuBtn
+        .on('pointerdown', loadMenu);
+
+    stage.addChild(menuBtn);
+}
 
 function animate() {
-    bump.hit(ant,foodSprites, false, true, true,
-        function (collision, platform) {
-            stage.removeChild(platform);
-        });
-    ant.speed = 2;
-
     requestAnimationFrame(animate);
+
     renderer.render(stage);
 }
 
-animate(); 
+animate();
