@@ -5,9 +5,9 @@ var gameport = document.getElementById("menu");
 var renderer = PIXI.autoDetectRenderer({transparent: true});
 gameport.appendChild(renderer.view);
 
+var bump = new Bump(PIXI);
 //root of scene graph
 var stage = new PIXI.Container();
-//PIXI.SCALE_MODES.DEFAULT = PIXI.SCALE_MODES.NEAREST;
 var texture = PIXI.Texture.from("assets/leaves_background.png");
 
 var menu_background = new PIXI.Sprite(texture);
@@ -42,6 +42,11 @@ function loadMenu() {
     stage.addChild(credsBtn);
 }
 
+var hand = new PIXI.Sprite(PIXI.Texture.from("assets/hand.png"));
+
+hand.position.x = 740;
+hand.position.y = 540;
+hand.interactive = true;
 
 function onPlayButtonDown() {
     // load game background
@@ -50,12 +55,8 @@ function onPlayButtonDown() {
     game_board.height = renderer.screen.height;
     stage.addChild(game_board);
 
-    var hand = new PIXI.Sprite(PIXI.Texture.from("assets/hand.png"));
-
-    hand.position.x = 740;
-    hand.position.y = 540;
+    // add the hand sprite that was created above
     stage.addChild(hand);
-
 
     // add menu button
     var menuBtn = new PIXI.Sprite(PIXI.Texture.from("assets/button_menu_fall.png"));
@@ -68,6 +69,19 @@ function onPlayButtonDown() {
         .on('pointerdown', loadMenu);
 
     stage.addChild(menuBtn);
+    scatterLeaves();
+
+    let people_text = new PIXI.Text(
+        'How to play: use W, A, S, D keys to move the hand to gather the leaves. ',
+        {fontFamily : "\"Courier New\", Courier, monospace",
+            fontSize: 15,
+            fontWeight: "bold",
+            fill : ["#fa0"],
+            align : 'center'});
+
+    people_text.x = 10;
+    people_text.y = 10;
+    stage.addChild(people_text);
 }
 
 function onCredButtonDown() {
@@ -112,7 +126,65 @@ function onCredButtonDown() {
     stage.addChild(menuBtn);
 }
 
+var leaves = [
+    "assets/red_leaf.png", "assets/red_leaf.png", "assets/red_leaf.png",
+    "assets/yellow_leaf.png", "assets/yellow_leaf.png", "assets/yellow_leaf.png",
+    "assets/orange_leaf.png", "assets/orange_leaf.png", "assets/orange_leaf.png",
+];
+var leavesSprites = [];
+
+// add leaves to game
+function scatterLeaves() {
+
+    for (i = 0; i < leaves.length; i++) {
+
+        // assign sprite to a png from the leaves array
+        var leaf = new PIXI.Sprite(PIXI.Texture.from(leaves[i]));
+
+        // "scatter" leaves by randomly generating x,y coordinates
+        var xValue = Math.floor(Math.random() * 750) + 1;
+        var yValue = Math.floor(Math.random() * 550) + 1;
+
+        leaf.width = 70;
+        leaf.height = 70;
+        leaf.position.x = xValue;
+        leaf.position.y = yValue;
+        stage.addChild(leaf);
+        leavesSprites[i] = leaf;
+
+    }
+}
+
+function keydownEventHandler(e) {
+
+    if (e.keyCode === 87) { //w key
+        hand.position.y -=10;
+    }
+
+    if (e.keyCode === 83) { //s key
+        hand.position.y +=10;
+    }
+
+    if (e.keyCode === 65) { //a key
+        hand.position.x -=10;
+    }
+
+    if (e.keyCode === 68) { //d key
+        hand.position.x +=10;
+    }
+}
+
+// listen for user moving the hand
+document.addEventListener("keydown", keydownEventHandler);
+
+
 function animate() {
+    // detect collision
+    bump.hit(hand,leavesSprites, false, true, true,
+        function (collision, platform) {
+            stage.removeChild(platform);
+        });
+    hand.speed = 2;
     requestAnimationFrame(animate);
 
     renderer.render(stage);
